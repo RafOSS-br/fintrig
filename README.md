@@ -1,0 +1,2 @@
+fintrig is a lightweight, zero-allocation ISO8583 parser and field trigger engine designed for use in XDP and eBPF environments. It enables fast message inspection and field-based packet filtering directly in the kernel networking stack.
+⚠️ This project is under active development and not yet production-ready.
