@@ -1,0 +1,9 @@
+*.md
+!README.md
+!CONTRIBUTING.md
+*.ll
+*.o
+*.bc
+*.txt
+*.lto.o
+fintrig-tests

@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug fintrig-tests (LLDB)",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${workspaceFolder}/fintrig-tests",
+        "cwd": "${workspaceFolder}",
+        "args": [],
+        "stopOnEntry": false,
+        "preLaunchTask": "build"
+      }
+    ]
+  }
+  
