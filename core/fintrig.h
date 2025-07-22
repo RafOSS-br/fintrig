@@ -1,6 +1,6 @@
 #pragma once
 
-#include <linux/types.h>
+#include <types.h>
 
 #define FINTRIG_MAX_FIELDS 64
 #define OFFSET_BUCKET_SIZE 5

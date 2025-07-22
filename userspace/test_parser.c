@@ -1,17 +1,7 @@
 #include <stdio.h>
 #include <../core/fintrig.h>
 #include <../core/spec_1987.h>
-
-#define ASSERT_EQ(label, expr, expected, fail_var)                   \
-    do {                                                             \
-        int result = (expr);                                         \
-        if (result != (expected)) {                                  \
-            printf("[%s] FAIL (expected %d, got %d)\n", label, expected, result); \
-            (fail_var) = 1;                                          \
-        } else {                                                     \
-            printf("[%s] PASS\n", label);                            \
-        }                                                            \
-    } while (0)
+#include "test_util.h"
 
 int test_len() {
     printf("[parser length] running...\n");

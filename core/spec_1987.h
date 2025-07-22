@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fintrig.h"
-#include <linux/types.h>
+#include <types.h>
 
 /* ISO 8583 v1987 ASCII spec (partial) */
 static const struct fintrig_field_spec iso_8583_1987_fields[FINTRIG_MAX_FIELDS + 1] = {
