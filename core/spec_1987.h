@@ -20,6 +20,6 @@ static const struct fintrig_message_spec iso_8583_1987_spec = {
     .fields = iso_8583_1987_fields,
 };
 
-int fintrig_parse_iso_8583_1987(const __u8 *data,
-    __u16 len,
-    struct fintrig_msg *out);
+int fintrig_parse_iso_8583(const __u8 *data, __u16 len,
+                           const struct fintrig_message_spec *spec,
+                           struct fintrig_msg *out);

@@ -3,6 +3,9 @@
 #include <linux/types.h>
 
 #define FINTRIG_MAX_FIELDS 64
+#define OFFSET_BUCKET_SIZE 5
+#define OFFSET_BUCKET_COUNT ((FINTRIG_MAX_FIELDS + OFFSET_BUCKET_SIZE) / OFFSET_BUCKET_SIZE)
+
 
 /* prefix length: 0 = fixed, 2 = LL, 3 = LLL */
 enum fintrig_prefix {
@@ -29,7 +32,7 @@ struct fintrig_msg {
     __u8  bitmap[8];                       /* primary bitmap */
     const __u8 *payload;                   /* raw ISO8583 data */
     __u16 len;                              /* total payload length */
-    __u16 offset[FINTRIG_MAX_FIELDS + 1];  /* offset of each field (0 if absent) */
+    __u16 offset[OFFSET_BUCKET_COUNT];  /* offset of each bucket of fields (0 if all absent in bucket) */
 };
 
 static __inline int fintrig_is_valid(const struct fintrig_msg *msg);

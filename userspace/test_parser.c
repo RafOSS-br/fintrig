@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <../core/fintrig.h>
 #include <../core/spec_1987.h>
-#include <linux/types.h>
 
 #define ASSERT_EQ(label, expr, expected, fail_var)                   \
     do {                                                             \
@@ -14,26 +13,24 @@
         }                                                            \
     } while (0)
 
-
 int test_len() {
     printf("[parser length] running...\n");
     int fail = 0;
 
-    ASSERT_EQ("test 1 - length == 0", fintrig_parse_iso_8583_1987(
-        (__u8 *)"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0, NULL), -1, fail);
+    ASSERT_EQ("null data", fintrig_parse_iso_8583(NULL, 10, &iso_8583_1987_spec, NULL), -1, fail);
+    ASSERT_EQ("null spec", fintrig_parse_iso_8583((__u8 *)"\x00\x10...", 10, NULL, NULL), -1, fail);
 
+    ASSERT_EQ("too short len", fintrig_parse_iso_8583((__u8 *)"\x00", 1, &iso_8583_1987_spec, NULL), -1, fail);
+    ASSERT_EQ("len < MLI", fintrig_parse_iso_8583((__u8 *)"\x00\x0A\x12\x34", 4, &iso_8583_1987_spec, NULL), -1, fail);
+    ASSERT_EQ("MLI < required fields", fintrig_parse_iso_8583(
+        (__u8 *)"\x00\x05\x12\x34\x56\x78\x90", 7, &iso_8583_1987_spec, NULL), -1, fail);
 
-    ASSERT_EQ("test 2 - fail in message lenght indicator", fintrig_parse_iso_8583_1987((__u8 *) "\x00\x0A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 10, NULL), -1, fail);
-
-    ASSERT_EQ("test 3 - pass message lenght indicator but fail in required fields", fintrig_parse_iso_8583_1987((__u8 *) "\x00\x0A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 12, NULL), -1, fail);
-
-    ASSERT_EQ("test 2 - length > 12", fintrig_parse_iso_8583_1987(
-        (__u8 *)"\x00\x0C\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 14, NULL), 12, fail);
-
+    ASSERT_EQ("valid message", fintrig_parse_iso_8583(
+        (__u8 *)"\x00\x10\x12\x34\x56\x78\x90\xAB\xCD\xEF\x00\x00\x00\x00\x00\x00\x00\x00", 18,
+        &iso_8583_1987_spec, NULL), 16, fail);
 
     return fail;
 }
-
 
 int test_parser() {
     printf("[parser] running...\n");
