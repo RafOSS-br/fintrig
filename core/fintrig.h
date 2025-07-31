@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-#define FINTRIG_MAX_FIELDS 64
+#define FINTRIG_MAX_FIELDS 128
 #define OFFSET_BUCKET_SIZE 5
 #define OFFSET_BUCKET_COUNT ((FINTRIG_MAX_FIELDS + OFFSET_BUCKET_SIZE) / OFFSET_BUCKET_SIZE)
 
@@ -42,3 +42,7 @@ __u8 fintrig_has_field(const struct fintrig_msg *msg, __u8 field);
 static __inline const __u8* fintrig_get_field_ptr(const struct fintrig_msg *msg, int field);
 
 static __inline int fintrig_get_field_len(const struct fintrig_msg *msg, int field);
+
+static inline __u8 has_secondary_bitmap(const struct fintrig_msg *msg) {
+    return fintrig_has_field(msg, 1);
+}

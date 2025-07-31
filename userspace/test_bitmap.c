@@ -26,3 +26,27 @@ int test_bitmap() {
 
     return fail;
 }
+
+
+int test_has_secondary_bitmap() {
+    printf("[has_secondary_bitmap] running...\n");
+    int fail = 0;
+
+    struct fintrig_msg msg = {0};
+    msg.spec = &iso_8583_1987_spec;
+
+    /* Primary bitmap with bit 1 set → secondary bitmap present */
+    const __u8 bitmap_with_secondary[8] = { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    memcpy(msg.bitmap, bitmap_with_secondary, sizeof(bitmap_with_secondary));
+    ASSERT_EQ("secondary bitmap present", has_secondary_bitmap(&msg), 1, fail);
+
+    /* Primary bitmap without bit 1 → without secondary */
+    const __u8 bitmap_no_secondary[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    memcpy(msg.bitmap, bitmap_no_secondary, sizeof(bitmap_no_secondary));
+    ASSERT_EQ("secondary bitmap absent", has_secondary_bitmap(&msg), 0, fail);
+
+    /* Message with NULL pointer */
+    ASSERT_EQ("msg NULL", has_secondary_bitmap(NULL), 0, fail);
+
+    return fail;
+}
