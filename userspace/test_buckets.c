@@ -3,10 +3,11 @@
 #include <../core/fintrig.h>
 #include <../core/spec_1987.h>
 #include "test_util.h"
+#include <../core/types.h>
 
 /* Helper: creates dummy message with all fields present */
 static void prepare_msg_with_fields(struct fintrig_msg *msg, int total_fields) {
-    memset(msg, 0, sizeof(*msg));
+    *msg = fintrig_msg_new();
     msg->spec = &iso_8583_1987_spec;
     static __u8 payload[512]; /* fake buffer */
     msg->payload = payload;
@@ -30,16 +31,16 @@ int test_bucket_initial_build() {
 
     /* No bucket filled */
     for (int i = 0; i < OFFSET_BUCKET_COUNT; i++) {
-        ASSERT_EQ("bucket initially zero", msg.offset[i], 0, fail);
+        ASSERT_EQ("bucket initially zero", msg.offset[i], UINT16_MAX, fail);
     }
 
     /* Call to access field 10 → should build up to there */
-    __u8 *ptr = fintrig_get_field_ptr(&msg, 10);
-    ASSERT_NEQ("ptr not NULL", ptr, NULL, fail);
+    struct fintrig_field f = fintrig_get_field(&msg, 10);
+    ASSERT_NEQ("ptr not NULL", f.ptr, NULL, fail);
 
     int filled = 0;
     for (int i = 0; i < OFFSET_BUCKET_COUNT; i++) {
-        if (msg.offset[i] != 0)
+        if (msg.offset[i] != UINT16_MAX)
             filled++;
     }
     ASSERT_NEQ("some buckets filled", filled, 0, fail);
@@ -55,21 +56,21 @@ int test_bucket_incremental_build() {
     prepare_msg_with_fields(&msg, 50);
 
     /* Access field 30 */
-    fintrig_get_field_ptr(&msg, 30);
+    fintrig_get_field(&msg, 30);
 
     int filled_after_30 = 0;
     for (int i = 0; i < OFFSET_BUCKET_COUNT; i++) {
-        if (msg.offset[i] != 0)
+        if (msg.offset[i] != UINT16_MAX)
             filled_after_30++;
     }
     ASSERT_NEQ("buckets built for field 30", filled_after_30, 0, fail);
 
     /* Now access field 50 → should expand */
-    fintrig_get_field_ptr(&msg, 50);
+    fintrig_get_field(&msg, 50);
 
     int filled_after_50 = 0;
     for (int i = 0; i < OFFSET_BUCKET_COUNT; i++) {
-        if (msg.offset[i] != 0)
+        if (msg.offset[i] != UINT16_MAX)
             filled_after_50++;
     }
     ASSERT_NEQ("buckets expanded for field 50", filled_after_50 >= filled_after_30, 0, fail);
@@ -85,18 +86,18 @@ int test_bucket_reuse() {
     prepare_msg_with_fields(&msg, 40);
 
     /* First access builds buckets */
-    fintrig_get_field_ptr(&msg, 20);
+    fintrig_get_field(&msg, 20);
     int filled_before = 0;
     for (int i = 0; i < OFFSET_BUCKET_COUNT; i++) {
-        if (msg.offset[i] != 0)
+        if (msg.offset[i] != UINT16_MAX)
             filled_before++;
     }
 
     /* Second access should not rebuild everything (same region) */
-    fintrig_get_field_ptr(&msg, 25);
+    fintrig_get_field(&msg, 25);
     int filled_after = 0;
     for (int i = 0; i < OFFSET_BUCKET_COUNT; i++) {
-        if (msg.offset[i] != 0)
+        if (msg.offset[i] != UINT16_MAX)
             filled_after++;
     }
 

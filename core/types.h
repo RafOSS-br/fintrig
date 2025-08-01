@@ -4,4 +4,5 @@
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
+#define UINT16_MAX 0xFFFF
 #endif

@@ -100,17 +100,27 @@ int test_field_pointer_and_buckets() {
     msg.payload = payload;
     msg.len = sizeof(payload);
 
-    /* Simulate present fields */
-    const __u8 bitmap[8] = { 0xFF, 0xFF, 0, 0, 0, 0, 0, 0 }; /* fields 1–16 */
-    memcpy(msg.bitmap, bitmap, 8);
+    /* Simulate present fields: 1–16 + field 50 */
+    __u8 bitmap[8] = {0};
+    for (int f = 1; f <= 16; f++) {
+        int byte_index = (f - 1) / 8;
+        int bit_index  = (f - 1) % 8;
+        bitmap[byte_index] |= (0x80 >> bit_index);
+    }
+    /* Set bit for field 50 */
+    int byte_index_50 = (50 - 1) / 8;
+    int bit_index_50 = (50 - 1) % 8;
+    bitmap[byte_index_50] |= (0x80 >> bit_index_50);
 
-    /* Access field 10 (should build buckets) */
-    __u8 *ptr = fintrig_get_field_ptr(&msg, 10);
-    ASSERT_NEQ("field 10 pointer", ptr, NULL, fail);
+    memcpy(msg.bitmap, bitmap, sizeof(bitmap));
 
-    /* Access field 50 → should expand buckets */
-    ptr = fintrig_get_field_ptr(&msg, 50);
-    ASSERT_NEQ("field 50 pointer", ptr, NULL, fail);
+    /* Access field 10 */
+    struct fintrig_field f = fintrig_get_field(&msg, 10);
+    ASSERT_NEQ("field 10 pointer", f.ptr, NULL, fail);
+
+    /* Access field 50 */
+    f = fintrig_get_field(&msg, 50);
+    ASSERT_NEQ("field 50 pointer", f.ptr, NULL, fail);
 
     return fail;
 }

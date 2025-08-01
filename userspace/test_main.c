@@ -14,6 +14,8 @@ extern int test_field_pointer_and_buckets();
 extern int test_bucket_initial_build();
 extern int test_bucket_incremental_build();
 extern int test_bucket_reuse();
+extern int test_field_object_basic();
+extern int test_field_object_tlv_iteration();
 
 int main() {
     int fail = 0;
@@ -31,6 +33,8 @@ int main() {
     fail |= test_bucket_initial_build();
     fail |= test_bucket_incremental_build();
     fail |= test_bucket_reuse();
+    fail |= test_field_object_basic();
+    fail |= test_field_object_tlv_iteration();
     if (fail) {
         printf("❌ Some tests failed\n");
         return 1;
