@@ -22,3 +22,14 @@
             printf("[%s] PASS\n", label);                            \
         }                                                            \
     } while (0)
+
+#define ASSERT_NEQ(label, expr, not_expected, fail_var)              \
+    do {                                                             \
+        int result = (expr != (not_expected));                        \
+        if (!result) {                                               \
+            printf("[%s] FAIL (value equals unexpected %ld)\n", label, (long)(not_expected)); \
+            (fail_var) = 1;                                          \
+        } else {                                                     \
+            printf("[%s] PASS\n", label);                            \
+        }                                                            \
+    } while (0)
